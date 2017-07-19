@@ -90,7 +90,6 @@
         isHidden=true;
 
         clearCSS(cfg);
-        console.log('hidden')
     }
 
 
@@ -100,7 +99,6 @@
             isHidden=false;
 
             attachCSS(cfg);
-            console.log('show');
         }
     }
 
