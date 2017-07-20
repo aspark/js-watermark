@@ -88,7 +88,7 @@
             return;
 
         isHidden=true;
-
+        console.log('hide');
         clearCSS(cfg);
     }
 
@@ -97,41 +97,17 @@
         if(isHidden){
 
             isHidden=false;
-
+            console.log('show');
             attachCSS(cfg);
         }
     }
 
-    var isMouseDown=false;
     function hackCopy(cfg){
-        addListener("keydown", function(e){
-            if(e.ctrlKey){
-                hide(cfg);
-            }
-        });
-        addListener("keyup", function(e){
-            if(!e.ctrlKey){
+        addListener("copy", function(){
+            hide(cfg);
+            setTimeout(function() {
                 show(cfg);
-            }
-        });
-
-        addListener("mousedown", function(e){
-            if(e.button>-1){
-                isMouseDown=true;
-            }
-        });
-
-        addListener("mouseup", function(e){
-            if(e.button>-1){
-                isMouseDown=false;
-                show(cfg);
-            }
-        });
-
-        addListener("mousemove", function(){
-            if(isMouseDown){
-                hide(cfg);
-            }
+            }, 10);
         });
     }
 
