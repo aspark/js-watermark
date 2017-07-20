@@ -33,6 +33,8 @@ another way is `window.wm.create(options)`, default options:
         "fontsize":21,//水印大小
         "opacity":0.005,//水印透明度, 推荐改为0.03
         "rotate":-30//倾斜角度
+        "tile":false//是否平铺
+        "mode":"auto"//使用的模式, html：添加label标签的方式  css：使用css的方式  auto：自动：ie8使用html模式，其它使用css
     }
 
 ## see demo
