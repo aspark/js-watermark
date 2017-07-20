@@ -14,22 +14,6 @@
         return target;
     }
 
-    function trim(str){
-        return str.replace(/(\s+$)|(^\s+)/ig, '');
-    }
-
-    function attachVML(cfg){
-        // document.namespaces.add('vml', 'urn:schemas-microsoft-com:vml', "#default#VML");
-
-        // addStyle("vml\:* { behavior: url(#default#VML) }");
-
-
-    }
-
-    function attachSVG(cfg){
-        
-    }
-
     function addStyle(html){
         var style = document.createElement("style");
         document.getElementsByTagName('head')[0].appendChild(style);
@@ -48,65 +32,141 @@
         });
     }
 
-    function attachCSS(cfg){
-        var style = "@media screen{\
-            "+cfg.selector+"{\
-                content:\""+(cfg.content||'')+"\";\
-                opacity:"+cfg.opactiy+";\
-                -webkit-opacity:"+cfg.opactiy+";\
-                -moz-opacity:"+cfg.opactiy+";\
-                position:absolute;\
-                font-size:"+cfg.fontsize+"px;\
-                color:"+cfg.color+";\
-                display:inline;\
-                text-decoration:none;\
-                pointer-events:none;\
-                -webkit-user-select:none;\
-                -moz-user-select:none;\
-                -ms-user-select:none;\
-                user-select:none;\
-                transform:rotate("+cfg.rotate+"deg);\
-            }\
-        }"
-
-        addStyle(style);
+    function trim(str){
+        return str.replace(/(\s+$)|(^\s+)/ig, '');
     }
 
-    function clearCSS(cfg){
-        var style = "@media screen{\
-            "+cfg.selector+"{\
-                content:\"\";\
-            }\
-        }"
+    var wmHTML = function(cfg){//only for ie 8
+        this.attach = function(){
+            //add style for span
+            var style = ".wm-span-placeholder{\
+                    opacity:"+cfg.opactiy+";\
+                    -webkit-opacity:"+cfg.opactiy+";\
+                    -moz-opacity:"+cfg.opactiy+";\
+                    position:absolute;\
+                    font-size:"+cfg.fontsize+"px;\
+                    color:"+cfg.color+";\
+                    display:inline;\
+                    text-decoration:none;\
+                    pointer-events:none;\
+                    -webkit-user-select:none;\
+                    -moz-user-select:none;\
+                    -ms-user-select:none;\
+                    user-select:none;\
+                    transform:rotate("+cfg.rotate+"deg);\
+                }\
+            }";
+            addStyle(style);
 
-        addStyle(style);
-    }
+            //create span for watermark
+            var elements = document.querySelectorAll(cfg.selector);
+            for(var i=0; i<elements.length; i++){
+                var span = document.createElement("span");
+                span.className = 'wm-span-placeholder';
+                span.style.filter = "alpha(opacity="+cfg.opactiy*100+")";
+                span.innerHTML = cfg.content;
+                elements[i].appendChild(span);
+            }
+        }
 
-    var isHidden = false;
-    function hide(cfg){
-        if(isHidden)
-            return;
+        var isHidden = false;
+        this.show = function(){
+            if(!isHidden)
+                return;
 
-        isHidden=true;
-        void 0;
-        clearCSS(cfg);
-    }
+            isHidden = false;
+            var elements = document.querySelectorAll('.wm-span-placeholder');
+            for(var i = 0; i<elements.length; i++){
+                elements[i].innerHTML=cfg.content;
+            }
+        }
 
+        this.hide = function(){
+            if(isHidden)
+                return;
 
-    function show(cfg){
-        if(isHidden){
+            isHidden = true;
+            var elements = document.querySelectorAll('.wm-span-placeholder');
+            for(var i = 0; i<elements.length; i++){
+                elements[i].innerHTML='';
+            }
+        }
+    };
+
+    var wmCSS3 = function(cfg){
+        cfg.originSelector = cfg.selector;
+        if(cfg.selector.indexOf(':')<0){
+            var segs = cfg.selector.split(',');
+            for(var i=0; i < segs.length; i++){
+                if(segs[i].indexOf(':')<0){
+                    segs[i] = trim(segs[i])+cfg.suffix;
+                }
+            }
+
+            cfg.selector = segs.join(",");
+        }
+
+        this.attach = function(){           
+            var style = "@media screen{\
+                "+cfg.selector+"{\
+                    content:\""+(cfg.content||'')+"\";\
+                    opacity:"+cfg.opactiy+";\
+                    -webkit-opacity:"+cfg.opactiy+";\
+                    -moz-opacity:"+cfg.opactiy+";\
+                    position:absolute;\
+                    font-size:"+cfg.fontsize+"px;\
+                    color:"+cfg.color+";\
+                    display:inline;\
+                    text-decoration:none;\
+                    pointer-events:none;\
+                    -webkit-user-select:none;\
+                    -moz-user-select:none;\
+                    -ms-user-select:none;\
+                    user-select:none;\
+                    transform:rotate("+cfg.rotate+"deg);\
+                }\
+            }"
+
+            addStyle(style);
+        }
+
+        var isHidden = false;
+        this.show = function(){
+            if(!isHidden)
+                return;
 
             isHidden=false;
-            void 0;
-            attachCSS(cfg);
+
+            var style = "@media screen{\
+                "+cfg.selector+"{\
+                    content:\""+(cfg.content||'')+"\";\
+                }\
+            }"
+
+            addStyle(style);
+        }
+
+        this.hide = function(){
+            if(isHidden)
+                return;
+
+            isHidden=true;
+
+            var style = "@media screen{\
+                "+cfg.selector+"{\
+                    content:\"\";\
+                }\
+            }"
+
+            addStyle(style);
         }
     }
 
-    function hackCopy(cfg){
+    function hackCopy(runtime){
         addListener("copy", function(){
-            hide(cfg);
+            runtime.hide();
             setTimeout(function() {
-                show(cfg);
+                runtime.show();
             }, 10);
         });
     }
@@ -129,26 +189,13 @@
             merge(cfg, options);
         }
 
-        if(cfg.selector.indexOf(':')<0){
-            var segs = cfg.selector.split(',');
-            for(var i in segs){
-                if(segs[i].indexOf(':')<0){
-                    segs[i] = trim(segs[i])+cfg.suffix;
-                }
-            }
+        var runtime = ('\v'=='v')?new wmHTML(cfg):new wmCSS3(cfg);//use html for ie8
 
-            cfg.selector = segs.join(",");
+        if(isIE || runtime instanceof wmHTML){
+            hackCopy(runtime);
         }
 
-        if('\v'=='v'){//ie8  /*@cc_on!@*/false
-            return attachVML(cfg);
-        }
-
-        if(isIE){
-            hackCopy(cfg);
-        }
-
-        return attachCSS(cfg)
+        return runtime.attach();
     }
 
 
