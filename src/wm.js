@@ -64,9 +64,9 @@
         this.addTextStyle = function(){
             //add style for span
             var style = "."+this.textClassName+"{\
-                    opacity:"+cfg.opactiy+";\
-                    -webkit-opacity:"+cfg.opactiy+";\
-                    -moz-opacity:"+cfg.opactiy+";\
+                    opacity:"+cfg.opacity+";\
+                    -webkit-opacity:"+cfg.opacity+";\
+                    -moz-opacity:"+cfg.opacity+";\
                     position:absolute;\
                     font-size:"+cfg.fontsize+"px;\
                     color:"+cfg.color+";\
@@ -91,7 +91,7 @@
             for(var i=0; i<elements.length; i++){
                 var span = document.createElement("span");
                 span.className = this.textClassName;
-                span.style.filter = "alpha(opacity="+cfg.opactiy*100+")";
+                span.style.filter = "alpha(opacity="+cfg.opacity*100+")";
                 span.innerHTML = cfg.content;
                 elements[i].appendChild(span);
             }
@@ -138,9 +138,9 @@
             var style = "@media screen{\
                 "+cfg.selector+"{\
                     content:\""+(cfg.content||'')+"\";\
-                    opacity:"+cfg.opactiy+";\
-                    -webkit-opacity:"+cfg.opactiy+";\
-                    -moz-opacity:"+cfg.opactiy+";\
+                    opacity:"+cfg.opacity+";\
+                    -webkit-opacity:"+cfg.opacity+";\
+                    -moz-opacity:"+cfg.opacity+";\
                     position:absolute;\
                     font-size:"+cfg.fontsize+"px;\
                     color:"+cfg.color+";\
@@ -191,17 +191,19 @@
     }
 
     var wmTile = function(cfg){
-        wmHTML.apply(this, arguments);
-
         var defaultCfg= {
             row: 6,
             rowInterval: 90,
             col: 3,
             colInterval: 180,
+            x:0,
+            y:0,
             unit: 'px'
         };
 
         cfg = merge(defaultCfg, cfg);
+
+        wmHTML.apply(this, arguments);
 
         this.containerClassName="wm-container";
         this.addContainerStyle = function(){
@@ -222,8 +224,8 @@
                 for (var c = 0; c < cfg.col; c++) {
                     var tile = document.createElement('span');
                     tile.className=this.textClassName;
-                    tile.style.marginTop=(r * cfg.rowInterval) + cfg.unit;
-                    tile.style.marginLeft=(c * cfg.colInterval) + cfg.unit;
+                    tile.style.marginTop=(r * cfg.rowInterval + cfg.y) + cfg.unit;
+                    tile.style.marginLeft=(c * cfg.colInterval + cfg.x) + cfg.unit;
                     tile.innerHTML = cfg.content;
                     container.append(tile);
                 }
@@ -256,7 +258,7 @@
         var cfg = {
             "selector":"p, td",
             "color":"yellow",
-            "opactiy":0.005,
+            "opacity":0.005,
             "fontsize":21,
             "rotate":-30,
             "suffix":"::before",

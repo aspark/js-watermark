@@ -22,17 +22,30 @@
                 <td>c</td>
             </tr>
         </table>
-        <div style="display:none;">div</div>
+        <div style="height:100px;position:relative;margin-top:200px;">div</div>
 
         <script src="../src/wm.js"></script>
         <script>
+            // window.wm.create({
+            //     content:"1234",
+            //     // color:'red'
+            //     // opacity:0.1,
+            //     // mode:'html',
+            //     // tile:true,
+            //     // color:'gray'
+            // });
+
             window.wm.create({
-                content:"1234",
-                // color:'red'
-                // opactiy:0.1,
-                // mode:'html',
-                // tile:true,
-                // color:'gray'
+                selector:'p, div',//在p和div容器上添加，支持级联类指定，如：div .watermark
+                content:'123',
+                opacity:0.3,
+                tile:true,
+                color:'gray',
+                fontsize:30,//字体
+                row:2,//水印行数
+                col:2,//水印列数
+                x: 30,//左边距
+                y: 20//上边距
             });
         </script>
    </body>
