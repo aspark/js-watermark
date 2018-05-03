@@ -8,12 +8,17 @@
                 top:0;
                 left:0;
             }
+			
+			a:hover{
+				background-color:red;
+			}
         </style>
     </head>
     <body>
         
         <p>
             p
+			<a style="display:inline-block;width:100px;height:35px;">asdf</a>
         </p>
         <table>
             <tr>
@@ -38,14 +43,14 @@
             window.wm.create({
                 selector:'p, div',//在p和div容器上添加，支持级联类指定，如：div .watermark
                 content:'123',
-                opacity:0.3,
-                tile:true,
-                color:'gray',
-                fontsize:30,//字体
-                row:2,//水印行数
-                col:2,//水印列数
-                x: 30,//左边距
-                y: 20//上边距
+                opacity:0.03,
+                // tile:true,
+                // color:'gray',
+                // fontsize:30,//字体
+                // row:2,//水印行数
+                // col:2,//水印列数
+                // x: 30,//左边距
+                // y: 20//上边距
             });
         </script>
    </body>

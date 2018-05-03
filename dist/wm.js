@@ -227,7 +227,7 @@
                     tile.style.marginTop=(r * cfg.rowInterval + cfg.y) + cfg.unit;
                     tile.style.marginLeft=(c * cfg.colInterval + cfg.x) + cfg.unit;
                     tile.innerHTML = cfg.content;
-                    container.append(tile);
+                    container.appendChild(tile);
                 }
             }
 
