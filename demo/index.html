@@ -1,57 +1,139 @@
 <!DOCTYPE html>
 
 <html>
-    <head>
-        <style>
-            .wm-container{
-                position:absolute;
-                top:0;
-                left:0;
-            }
-			
-			a:hover{
-				background-color:red;
-			}
-        </style>
-    </head>
-    <body>
-        
-        <p>
-            p
-			<a style="display:inline-block;width:100px;height:35px;">asdf</a>
+  <head>
+    <style>
+      .wm-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+
+      a:hover {
+        background-color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="mode-css">
+      <b>mode:css</b>
+      <hr />
+      <p>
+        p
+        <a style="display: inline-block; width: 100px; height: 35px">asdf</a>
+      </p>
+      <p>adfa</p>
+      <table>
+        <tr>
+          <td>a</td>
+          <td>b</td>
+          <td>c</td>
+        </tr>
+      </table>
+      <div style="height: 100px; position: relative; margin-top: 20px">div</div>
+    </div>
+
+    <div class="mode-html">
+      <b>mode:html</b>
+      <hr />
+      <div
+        style="
+          height: 130px;
+          position: relative;
+          margin-top: 20px;
+          overflow: hidden;
+        "
+      >
+        div
+      </div>
+    </div>
+
+    <div class="mode-bg">
+      <b>mode:bg</b>
+      <hr />
+      <div style="height: 130px; position: relative; margin-top: 20px">div</div>
+    </div>
+
+    <div class="mode-txt">
+      <b>mode:css</b>
+      <hr />
+      <div>
+        <p class="paragraph">
+          2022年10月16日上午<span>，中国共产党</span>第二十次全国代表大会在北京人民大会堂开幕。9时许，各代表团陆续抵达天安门广场，肩负着9600多万名党员、14亿多中国人民的期盼与重托，代表们满怀信心步入人民大会堂。
         </p>
-        <table>
-            <tr>
-                <td>a</td>
-                <td>b</td>
-                <td>c</td>
-            </tr>
-        </table>
-        <div style="height:100px;position:relative;margin-top:200px;">div</div>
+        <p class="paragraph">
+          欢欣的笑容，洋溢着喜悦与幸福。“种玫瑰、搞加工、兴旅游，穷山坳开出致富花，山里人圆了小康梦。”四川省阿坝藏族羌族自治州小金县冒水村党支部书记陈望慧代表难掩激动，“只有在中国共产党的领导下，我们才能攻克一个个深度贫困堡垒，创造彪炳史册的人间奇迹。”
+          稳健的步伐，刻录下从容与笃定。“我国汽车业谋创新、促转型，成果鼓舞人心。”中国一汽党委书记、董事长徐留平代表感慨万千，“坚定不移走高质量发展之路，韧性强、潜力大、活力足的中国经济巨轮必将乘风破浪、扬帆远航。”
+          人民大会堂雄伟庄严，万人大礼堂气氛热烈。主席台上，党徽熠熠生辉，红旗鲜艳胜火。二楼和三楼眺台，“高举中国特色社会主义伟大旗帜，全面贯彻习近平新时代中国特色社会主义思想，弘扬伟大建党精神，为全面建设社会主义现代化国家、全面推进中华民族伟大复兴而团结奋斗！”“伟大、光荣、正确的中国共产党万岁！”的横幅，庄重醒目、激荡人心。
+        </p>
+        <p class="paragraph">
+          <span
+            >span历史性的一刻到来了！上午10时，雄壮的国歌奏响，党的二十大隆重开幕。雷鸣般的掌声中，习近平总书记健步走上报告席。</span
+          >
+        </p>
+        <p class="paragraph">
+          “十年来，我们经历了对党和人民事业具有重大现实意义和深远历史意义的三件大事：一是迎来中国共产党成立一百周年，二是中国特色社会主义进入新时代，三是完成脱贫攻坚、全面建成小康社会的历史任务，实现第一个百年奋斗目标。这是中国共产党和中国人民团结奋斗赢得的历史性胜利，是彪炳中华民族发展史册的历史性胜利，也是对世界具有深远影响的历史性胜利。”
+        </p>
+      </div>
+    </div>
 
-        <script src="../src/wm.js"></script>
-        <script>
-            // window.wm.create({
-            //     content:"1234",
-            //     // color:'red'
-            //     // opacity:0.1,
-            //     // mode:'html',
-            //     // tile:true,
-            //     // color:'gray'
-            // });
+    <script src="../src/wm.js"></script>
+    <script>
+      // window.wm.create({
+      //     content:"1234",
+      //     // color:'red'
+      //     // opacity:0.1,
+      //     // mode:'html',
+      //     // tile:true,
+      //     // color:'gray'
+      // });
 
-            window.wm.create({
-                selector:'p, div',//在p和div容器上添加，支持级联类指定，如：div .watermark
-                content:'123',
-                opacity:0.03,
-                // tile:true,
-                // color:'gray',
-                // fontsize:30,//字体
-                // row:2,//水印行数
-                // col:2,//水印列数
-                // x: 30,//左边距
-                // y: 20//上边距
-            });
-        </script>
-   </body>
+      window.wm.create({
+        selector: ".mode-css p, .mode-css div", //在p和div容器上添加，支持级联类指定，如：div .watermark
+        content: "123",
+        opacity: 0.03,
+        color: "#000",
+        // fontSize:30,//字体
+      });
+
+      window.wm.create({
+        mode: "html",
+        selector: ".mode-html div", //在p和div容器上添加，支持级联类指定，如：div .watermark
+        content: "123",
+        opacity: 1,
+        color: "#ccc",
+        // tile:true,
+        // fontSize:30,//字体
+        row: 3, //水印行数
+        col: 6, //水印列数
+        x: 20, //左边距
+        y: 20, //上边距
+      });
+
+      window.wm.create({
+        mode: "bg",
+        selector: ".mode-bg div", //在p和div容器上添加，支持级联类指定，如：div .watermark
+        content: "123",
+        opacity: 0.3,
+        color: "#ccc",
+        fontSize: 18, //字体
+        height: "30",
+        width: "50",
+      });
+
+      window.wm.create({
+        mode: "txt",
+        selector: ".mode-txt div", //在p和div容器上添加，支持级联类指定，如：div .watermark
+        content: 123456,
+        opacity: 0.03,
+        color: "#000",
+        // tile:true,
+        // fontSize:30,//字体
+        // row:2,//水印行数
+        // col:2,//水印列数
+        // x: 30,//左边距
+        // y: 20//上边距
+      });
+    </script>
+  </body>
 </html>
