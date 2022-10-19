@@ -95,4 +95,4 @@ wm.create("content");
 
 ## see demo
 
-[demo src]('./demo/index.html')
+[demo src](./demo/index.html)
