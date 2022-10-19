@@ -3,11 +3,11 @@
 <html>
   <head>
     <style>
-      .wm-container {
+      /* .wm-container {
         position: absolute;
         top: 0;
         left: 0;
-      }
+      } */
 
       a:hover {
         background-color: red;
@@ -16,7 +16,7 @@
   </head>
   <body>
     <div class="mode-css">
-      <b>mode:css</b>
+      <h2>mode:css</h2>
       <hr />
       <p>
         p
@@ -34,7 +34,7 @@
     </div>
 
     <div class="mode-html">
-      <b>mode:html</b>
+      <h2>mode:html</h2>
       <hr />
       <div
         style="
@@ -44,18 +44,22 @@
           overflow: hidden;
         "
       >
-        div
+        div:HTML is the standard markup language for Web pages. With HTML you
+        can create your own Website. HTML is easy to learn - You will enjoy it!
       </div>
     </div>
 
     <div class="mode-bg">
-      <b>mode:bg</b>
+      <h2>mode:bg</h2>
       <hr />
-      <div style="height: 130px; position: relative; margin-top: 20px">div</div>
+      <div style="height: 130px; position: relative; margin-top: 20px">
+        div:HTML is the standard markup language for Web pages. With HTML you
+        can create your own Website. HTML is easy to learn - You will enjoy it!
+      </div>
     </div>
 
     <div class="mode-txt">
-      <b>mode:css</b>
+      <h2>mode:txt</h2>
       <hr />
       <div>
         <p class="paragraph">
@@ -101,13 +105,15 @@
         selector: ".mode-html div", //在p和div容器上添加，支持级联类指定，如：div .watermark
         content: "123",
         opacity: 1,
-        color: "#ccc",
+        color: "#e7e7e7",
         // tile:true,
-        // fontSize:30,//字体
+        fontSize: 18, //字体
         row: 3, //水印行数
-        col: 6, //水印列数
-        x: 20, //左边距
-        y: 20, //上边距
+        col: 20, //水印列数
+        colInterval: 65,
+        rowInterval: 40,
+        x: 10, //左边距
+        y: 10, //上边距
       });
 
       window.wm.create({
@@ -115,10 +121,10 @@
         selector: ".mode-bg div", //在p和div容器上添加，支持级联类指定，如：div .watermark
         content: "123",
         opacity: 0.3,
-        color: "#ccc",
+        color: "#e7e7e7",
         fontSize: 18, //字体
-        height: "30",
-        width: "50",
+        height: "40",
+        width: "80",
       });
 
       window.wm.create({

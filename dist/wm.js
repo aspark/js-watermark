@@ -117,40 +117,52 @@
 
     //继承html模式，但开启了水平和垂直平铺
     var HTMLTileGenerator = function (cfg) {
-        cfg = merge({
+        let config = merge({
             row: 6,
             rowInterval: 90,
             col: 3,
             colInterval: 180,
             x: 0,
             y: 0,
-            unit: 'px'
+            unit: 'px',
+            containerClassName: 'wm-container',
+            containerStyle: true,
         }, cfg);
 
         HTMLSingleGenerator.apply(this, arguments);
 
-        this.containerClassName = "wm-container";//需要手动添加样式
+        this.containerClassName = config.containerClassName;//需要手动添加样式
         this.addContainerStyle = function () {
-            var style = "." + this.containerClassName + "{\
-                position:relative;\
-                top:0;\
-                z-index:999;\
-                overflow:hidden;\
-            }";
-            addStyle(style);
+            let style = '';
+            if (typeof config.containerStyle === 'boolean') {
+                if (config.containerStyle === true) {
+                    style = "." + this.containerClassName + "{\
+                        position:absolute;\
+                        top:0;\
+                        left:0;\
+                        z-index:-1;\
+                    }";
+                }
+            }
+            else if (config.containerStyle && typeof config.containerStyle === 'string') {
+                style = config.containerStyle;
+            }
+
+            if (style)
+                addStyle(style);
         }
 
         this.createContainer = function () {
             var container = document.createElement('div');
             container.className = this.containerClassName;
 
-            for (var r = 0; r < cfg.row; r++) {
-                for (var c = 0; c < cfg.col; c++) {
+            for (var r = 0; r < config.row; r++) {
+                for (var c = 0; c < config.col; c++) {
                     var tile = document.createElement('span');
                     tile.className = this.textClassName;
-                    tile.style.marginTop = (r * cfg.rowInterval + cfg.y) + cfg.unit;
-                    tile.style.marginLeft = (c * cfg.colInterval + cfg.x) + cfg.unit;
-                    tile.innerHTML = cfg.content;
+                    tile.style.marginTop = (r * config.rowInterval + config.y) + config.unit;
+                    tile.style.marginLeft = (c * config.colInterval + config.x) + config.unit;
+                    tile.innerHTML = config.content;
                     container.appendChild(tile);
                 }
             }
@@ -158,13 +170,36 @@
             return container;
         }
 
+        var observer = null;
+        if (config.renew && !!(typeof MutationObserver)) {
+            observer = new MutationObserver(function (mutations) {
+                void 0
+                mutations.forEach(function (mutation) {
+                    if (mutation.type === "childList" && !!mutation.removedNodes) {
+                        mutation.removedNodes.forEach(function (node) {
+                            if (node.classList.contains(config.containerClassName)) {
+                                mutation.target.appendChild(node);
+                            }
+                        })
+                    }
+                });
+            });
+        }
+
         this.attach = function () {
-            // this.addContainerStyle();
+            this.addContainerStyle();
             this.addTextStyle();
 
             var elements = getElements(cfg.selector);
             for (var i = 0; i < elements.length; i++) {
                 elements[i].appendChild(this.createContainer());
+
+                if (config.renew && observer && elements[i].htmlObserved != true) {
+                    observer.observe(elements[i], {
+                        childList: true
+                    });
+                    elements[i].htmlObserved = true
+                }
             }
         }
     }
@@ -240,6 +275,20 @@
             return canvas.toDataURL('png')
         }
 
+        var observer = null;
+        if (config.renew && !!(typeof MutationObserver)) {
+            observer = new MutationObserver(function (mutations) {
+                // console.log("attributes changed", arguments)
+                mutations.forEach(function (mutation) {
+                    if (mutation.type === "attributes" && mutation.attributeName == 'style') {
+                        if (mutation.target.cssStyleBackground != mutation.target.style.background) {
+                            mutation.target.style.background = mutation.target.cssStyleBackground;
+                        }
+                    }
+                });
+            });
+        }
+
         function setWatermark(el) {
             let content = config.content
             if (typeof (config.content) == 'function') {
@@ -257,6 +306,16 @@
                     el.style.background = `repeat url(${img})`
                 else
                     el.style.background = `url(${img})`
+
+                el.cssStyleBackground = el.style.background;
+
+                if (config.renew && observer && el.cssObserved != true) {
+                    observer.observe(el, {
+                        attributes: true,
+                        attributeFilter: ['style']
+                    });
+                    el.cssObserved = true
+                }
             }, 0)
         }
 
@@ -382,6 +441,7 @@
         this.attach = function () {
             var elements = getElements(config.selector);
             for (let i = 0; i < elements.length; i++) {
+                elements[i].style.userSelect = config.userSelect;
                 addMark(elements[i], config.content, config)
             }
         }
@@ -407,7 +467,7 @@
             "opacity": 0.005,
             "fontSize": 21,
             "rotate": -30,
-            "suffix": "::before",
+            "renew": true
         };
 
         if (typeof options == 'string') {
