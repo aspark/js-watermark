@@ -1,4 +1,4 @@
-(function () {
+(function (root) {
     var isIE = (function () {
         return "ActiveXObject" in window
     })();
@@ -211,6 +211,7 @@
             "opacity": 0.005,
             "fontSize": 21,
             "rotate": -30,
+
             "suffix": "::before",
         }, cfg);
 
@@ -256,7 +257,10 @@
         let config = merge({
             color: '#eee',
             rotate: -30,
-            fontSize: 21
+            fontSize: 21,
+
+            width: null,
+            height: null
         }, cfg);
 
         function getImageDataUrl(msg) {
@@ -464,7 +468,7 @@
             "content": "",
 
             "color": "yellow",
-            "opacity": 0.005,
+            "opacity": 0.005, // 0.03
             "fontSize": 21,
             "rotate": -30,
             "renew": true
@@ -503,10 +507,13 @@
         distroy: function () { }
     }
 
-    window.wm = wm;
 
-    if (window.module) {
-
+    if (typeof define === 'function' && define.amd) {
+        define(wm);
+    } else if (typeof exports === 'object') {
+        module.exports = w;
     }
-})();
+
+    root.wm = wm;
+})(window);
 
