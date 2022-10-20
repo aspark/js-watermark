@@ -36,23 +36,18 @@
         return str.replace(/(\s+$)|(^\s+)/ig, '');
     }
 
-    // function getRotationDegrees(obj) {
-    //     var matrix = obj.css("-webkit-transform") ||
-    //         obj.css("-moz-transform") ||
-    //         obj.css("-ms-transform") ||
-    //         obj.css("-o-transform") ||
-    //         obj.css("transform");
-    //     if (matrix !== 'none') {
-    //         var values = matrix.split('(')[1].split(')')[0].split(',');
-    //         var a = values[0];
-    //         var b = values[1];
-    //         var angle = Math.round(Math.atan2(b, a) * (180 / Math.PI));
-    //     } else {
-    //         var angle = 0;
-    //     }
+    //max:最大长度， min：最小长度，rangeStart,rangeLength:字符范围，默认使用字母65,26，中文：4e00_9fff
+    function randomChars(max, min, rangeStart, rangeLength) {
+        let chars = '';
+        let count = Math.max(min || 1, Math.round(Math.random() * max));//字符数量
+        rangeStart = rangeStart === null || rangeStart === undefined ? 65 : rangeStart;
+        rangeLength = rangeLength === null || rangeLength === undefined ? 26 : rangeLength;
+        for (let i = 0; i < count; i++) {
+            chars += (String.fromCodePoint || String.fromCharCode)(Math.round(Math.random() * rangeLength) + rangeStart)
+        }
 
-    //     return angle;//(angle < 0) ? angle + 360 : angle;
-    // }
+        return chars;
+    }
 
     function getElements(selector) {
         return document.querySelectorAll(selector);
@@ -343,6 +338,9 @@
             userSelect: "none", //'none' 'inherit'
             headerWidth: 2,
             totalWidth: 20,
+            noise: false, // 是否添加干扰字符，或使用自定义的方法生成function():char
+            noiseAll: false,// 在所有字符后添加干扰
+            noiseColor: "transparent", //干扰字符的颜色
             skipChars: [
                 "，",
                 "。",
@@ -384,17 +382,34 @@
                     text = node.textContent;
                 }
 
+                let noise = null;
+                if (config.noise == true) {
+                    noise = function () {
+                        return randomChars(6, null, 0x4e00, 3000);
+                    }
+                }
+                else if (typeof config.noise == 'function') {
+                    noise = config.noise;
+                }
+
                 if (text !== null && text.length > marks.length) {
                     let html = "";
                     let hasInsert = false;
                     for (let i = 0, j = 0; i < text.length; i++) {
                         html += text[i];
                         if (config.fnIsSkipChars(text[i]) === false) {
-                            var needInsert = marks[j % marks.length] == "1"; //标记位为1的才添加
+                            let tagWidth = marks[j % marks.length] == "1" ? config.tagWidth : '0px';//标记位为1的才添加
+                            let needInsert = (noise && config.noiseAll) || tagWidth !== '0px';
+
                             j++;
                             if (needInsert) {
                                 hasInsert = true;
-                                html += `<${config.tag} style='display:inline-block;width:${config.tagWidth};'></${config.tag}>`; //height:${config.tagWidth}
+                                if (noise) {
+                                    html += `<${config.tag} style='display:inline-block;width:${tagWidth};color:${config.noiseColor};white-space:nowrap;wordbreak:keep-all'>${noise(config)}</${config.tag}>`; //height:${config.tagWidth}
+                                }
+                                else {
+                                    html += `<${config.tag} style='display:inline-block;width:${tagWidth};'></${config.tag}>`; //height:${config.tagWidth}
+                                }
                             }
                         }
                     }
@@ -504,7 +519,8 @@
 
     var wm = {
         create: attach,
-        distroy: function () { }
+        distroy: function () { },
+        randomChars: randomChars
     }
 
 

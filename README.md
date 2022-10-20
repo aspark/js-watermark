@@ -34,10 +34,11 @@ wm.create("content");
 
 ```javascript
     {
+        //base
         "selector":"p, td", //选择器，添加水印的容器
         "mode":"auto" //使用的模式, html：添加label标签的方式  css：使用css的方式  auto：自动：ie8使用html模式，其它使用css
-        "tile":true //是否平铺，默认true
         "content":"", //水印内容
+        "tile":true //是否平铺，默认true
 
         "color":"yellow", //水印颜色
         "fontsize":21, //水印大小
@@ -72,6 +73,9 @@ wm.create("content");
         "userSelect": "none", //'none' 'inherit' 是否可以选择
         "headerWidth": 2,//插入的值添加两个00前缀
         "totalWidth": 20,//插入的值统一到固定宽度，如长度不足20的，添加0前缀，超过20的将截断前面的
+        "oise": false, // 是否添加干扰字符，或使用自定义的方法生成function(config):char
+        "noiseAll": false,// 在所有字符后添加干扰
+        "noiseColor": "transparent", //干扰字符的颜色
         "skipChars": [//跳过的字符，这些字符有空白，不利用分析
             "，",
             "。",
@@ -92,6 +96,8 @@ wm.create("content");
 
     }
 ```
+
+> 以上为全量配置，除 content/selector 为必填，其它未设置的选择均使用上面展示的默认值
 
 ## see demo
 
