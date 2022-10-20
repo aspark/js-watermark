@@ -101,4 +101,6 @@ wm.create("content");
 
 ## see demo
 
-[demo src](./demo/index.html)
+src: ./demo/index.html  
+[online demo](https://aspark.github.io/js-watermark/demo/index.html)  
+
