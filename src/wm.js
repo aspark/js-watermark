@@ -49,6 +49,48 @@
         return chars;
     }
 
+    //<= 1.0	Not perceptible by human eyes.
+    //1 - 2	Perceptible through close observation.
+    //2 - 10	Perceptible at a glance.
+    //11 - 49	Colors are more similar than opposite
+    //100	Colors are exact opposite
+    function deltaRGB(rgbA, rgbB) {
+        let labA = rgb2lab(rgbA);
+        let labB = rgb2lab(rgbB);
+        let deltaL = labA[0] - labB[0];
+        let deltaA = labA[1] - labB[1];
+        let deltaB = labA[2] - labB[2];
+        let c1 = Math.sqrt(labA[1] * labA[1] + labA[2] * labA[2]);
+        let c2 = Math.sqrt(labB[1] * labB[1] + labB[2] * labB[2]);
+        let deltaC = c1 - c2;
+        let deltaH = deltaA * deltaA + deltaB * deltaB - deltaC * deltaC;
+        deltaH = deltaH < 0 ? 0 : Math.sqrt(deltaH);
+        let sc = 1.0 + 0.045 * c1;
+        let sh = 1.0 + 0.015 * c1;
+        let deltaLKlsl = deltaL / (1.0);
+        let deltaCkcsc = deltaC / (sc);
+        let deltaHkhsh = deltaH / (sh);
+        let i = deltaLKlsl * deltaLKlsl + deltaCkcsc * deltaCkcsc + deltaHkhsh * deltaHkhsh;
+        let result = i < 0 ? 0 : Math.sqrt(i);
+        // console.log(rgbA, rgbB, result);
+
+        return result;
+    }
+
+    function rgb2lab(rgb) {
+        let r = rgb[0] / 255, g = rgb[1] / 255, b = rgb[2] / 255, x, y, z;
+        r = (r > 0.04045) ? Math.pow((r + 0.055) / 1.055, 2.4) : r / 12.92;
+        g = (g > 0.04045) ? Math.pow((g + 0.055) / 1.055, 2.4) : g / 12.92;
+        b = (b > 0.04045) ? Math.pow((b + 0.055) / 1.055, 2.4) : b / 12.92;
+        x = (r * 0.4124 + g * 0.3576 + b * 0.1805) / 0.95047;
+        y = (r * 0.2126 + g * 0.7152 + b * 0.0722) / 1.00000;
+        z = (r * 0.0193 + g * 0.1192 + b * 0.9505) / 1.08883;
+        x = (x > 0.008856) ? Math.pow(x, 1 / 3) : (7.787 * x) + 16 / 116;
+        y = (y > 0.008856) ? Math.pow(y, 1 / 3) : (7.787 * y) + 16 / 116;
+        z = (z > 0.008856) ? Math.pow(z, 1 / 3) : (7.787 * z) + 16 / 116;
+        return [(116 * y) - 16, 500 * (x - y), 200 * (y - z)]
+    }
+
     function getElements(selector) {
         return document.querySelectorAll(selector);
     }
@@ -333,6 +375,7 @@
         let config = merge({
             targetNodeType: Node.TEXT_NODE,
             tag: "i",
+            tagTxt: '',
             tagWidth: "1px",
             containerTag: "span",
             userSelect: "none", //'none' 'inherit'
@@ -437,7 +480,12 @@
             }
         }
 
-        function addMark(target, num, config) {
+        function addMark(target, marks) {
+            scanNodes(target, marks);
+        }
+
+        this.attach = function () {
+            let num = config.content;
             if (isNaN(+num)) {
                 throw "请先转换为字值";
             }
@@ -454,14 +502,10 @@
                 marks = new Array(config.headerWidth + 1).join("0") + marks;
             }
 
-            scanNodes(target, marks);
-        }
-
-        this.attach = function () {
             var elements = getElements(config.selector);
             for (let i = 0; i < elements.length; i++) {
                 elements[i].style.userSelect = config.userSelect;
-                addMark(elements[i], config.content, config)
+                addMark(elements[i], marks, config)
             }
         }
     }
@@ -472,28 +516,36 @@
         }
 
         let config = merge({
-            replaceByCanvas: false
+            // replaceByCanvas: false
         }, cfg)
 
-        this.draw = function (el) {
-            el.style.position = 'relative'
+        this.draw = function (el, marks) {
+            // el.style.position = 'relative'
             let that = this;
             if (el.nodeName == 'CANVAS') {
                 //todo:
             }
             else {
                 html2canvas(el).then(function (canvas) {
-                    that.scan(el, canvas)
+                    that.scan(el, canvas, marks)
                 })
             }
         }
 
         let getColor = function (data, index) {
-            return data[index].toString('16') + data[index + 1].toString('16') + data[index + 2].toString('16') + data[index + 3].toString('16')
+            // return data[index].toString('16') + data[index + 1].toString('16') + data[index + 2].toString('16') + data[index + 3].toString('16')
+
+            return (data[index] << 16) + (data[index + 1] << 8) + data[index + 2]// + data[index + 3]
         }
 
-        this.scan = function (el, canvas) {
-            // document.body.appendChild(canvas)
+        let difColor = function (a, b) {
+            return deltaRGB([a & 0xff0000 >> 16, a & 0xff00 >> 8, a & 0xff], [b & 0xff0000 >> 16, b & 0xff00 >> 8, b & 0xff]) > 50;
+        }
+
+
+        this.scan = function (el, canvas, marks) {
+
+            //   document.body.appendChild(canvas)
 
             let width = canvas.width;
             let height = canvas.height;
@@ -510,41 +562,63 @@
             // context.fillRect(0, 0, width, height);
             // context.fillText('中', 60, 60);
 
-            console.log(size)
+            // console.log(size)
+            let matchCount = 0;
             for (let row = 0; row < height; row += rowDelta) {
                 for (let col = 0; col < width; col++) {
                     let color = getColor(data, (row * width + col) * 4);
 
-                    if (lastColor && color != lastColor && lastColor != bgColor && color == bgColor) {
-                        console.log(color);
-                        // data[(row * width + col) * 4] = 0;
-                        // data[(row * width + col) * 4 + 1] = 0;
-                        // data[(row * width + col) * 4 + 2] = 0;
-                        // data[(row * width + col) * 4 + 3] = 255;
-                        var i = document.createElement('i');
-                        i.style.display = 'inline-block'
-                        i.style.width = '1px'
-                        i.style.height = '1px'
-                        i.style.position = 'absolute'
-                        i.style.top = row + 'px'
-                        i.style.left = col + 'px'
-                        i.style.backgroundColor = config.color;
-                        el.appendChild(i);
-
-                        col += colDelta
+                    if (lastColor && difColor(color, lastColor) && difColor(color, bgColor) == false) {
+                        // console.log(color);
+                        matchCount++;
+                        let needPixel = marks[matchCount % marks.length] == "1";//标记位为1的才添加
+                        if (needPixel) {
+                            data[(row * width + col) * 4] = 0;
+                            data[(row * width + col) * 4 + 1] = 0;
+                            data[(row * width + col) * 4 + 2] = 0;
+                            data[(row * width + col) * 4 + 3] = 255;
+                            // var i = document.createElement('i');
+                            // i.style.display = 'inline-block'
+                            // i.style.width = '1px'
+                            // i.style.height = '1px'
+                            // i.style.position = 'absolute'
+                            // i.style.top = row + 'px'
+                            // i.style.left = col + 'px'
+                            // i.style.backgroundColor = config.color;
+                            // i.textContent = color;
+                            // el.appendChild(i);
+                        }
                     }
 
                     lastColor = color;
                 }
             }
             context.putImageData(image, 0, 0)
+            el.replaceWith(canvas)
         }
 
         this.attach = function () {
+            let num = config.content;
+            if (isNaN(+num)) {
+                throw "请先转换为字值";
+            }
+
+            let marks = num.toString(2);
+            //添加三个0前缀
+            if (marks.length < config.totalWidth) {
+                marks = marks.padStart(config.totalWidth, "0");
+            } else {
+                marks = marks.substring(marks.length - config.totalWidth);
+            }
+
+            if (config.headerWidth > 0) {
+                marks = new Array(config.headerWidth + 1).join("0") + marks;
+            }
+
 
             let elements = getElements(config.selector)
             for (let i = 0; i < elements.length; i++) {
-                this.draw(elements[i])
+                this.draw(elements[i], marks)
             }
         }
 
