@@ -102,7 +102,23 @@
       </div>
     </div>
 
+    <div class="mode-pixel">
+      <h1>6. mode:pixel</h1>
+      <hr />
+      <div>
+        <p class="paragraph">
+          2022年10月16日上午<span>，中国共产党</span>第二十次全国代表大会在北京人民大会堂开幕。9时许，各代表团陆续抵达天安门广场，肩负着9600多万名党员、14亿多中国人民的期盼与重托，代表们满怀信心步入人民大会堂。
+        </p>
+        <p class="paragraph">
+          欢欣的笑容，洋溢着喜悦与幸福。“种玫瑰、搞加工、兴旅游，穷山坳开出致富花，山里人圆了小康梦。”四川省阿坝藏族羌族自治州小金县冒水村党支部书记陈望慧代表难掩激动，“只有在中国共产党的领导下，我们才能攻克一个个深度贫困堡垒，创造彪炳史册的人间奇迹。”
+          稳健的步伐，刻录下从容与笃定。“我国汽车业谋创新、促转型，成果鼓舞人心。”中国一汽党委书记、董事长徐留平代表感慨万千，“坚定不移走高质量发展之路，韧性强、潜力大、活力足的中国经济巨轮必将乘风破浪、扬帆远航。”
+          人民大会堂雄伟庄严，万人大礼堂气氛热烈。主席台上，党徽熠熠生辉，红旗鲜艳胜火。二楼和三楼眺台，“高举中国特色社会主义伟大旗帜，全面贯彻习近平新时代中国特色社会主义思想，弘扬伟大建党精神，为全面建设社会主义现代化国家、全面推进中华民族伟大复兴而团结奋斗！”“伟大、光荣、正确的中国共产党万岁！”的横幅，庄重醒目、激荡人心。
+        </p>
+      </div>
+    </div>
+
     <script src="../src/wm.js"></script>
+    <script src="./scripts/html2canvas.min.js"></script>
     <script>
       // window.wm.create({
       //     content:"1234",
@@ -123,7 +139,7 @@
 
       window.wm.create({
         mode: "html",
-        selector: ".mode-html div", //在p和div容器上添加，支持级联类指定，如：div .watermark
+        selector: ".mode-html div",
         content: "123",
         opacity: 1,
         color: "#e7e7e7",
@@ -139,7 +155,7 @@
 
       window.wm.create({
         mode: "bg",
-        selector: ".mode-bg div", //在p和div容器上添加，支持级联类指定，如：div .watermark
+        selector: ".mode-bg div",
         content: "123",
         opacity: 0.3,
         color: "#e7e7e7",
@@ -150,7 +166,7 @@
 
       window.wm.create({
         mode: "txt",
-        selector: ".mode-txt div", //在p和div容器上添加，支持级联类指定，如：div .watermark
+        selector: ".mode-txt div",
         content: 123456,
         opacity: 0.03,
         color: "#000",
@@ -159,7 +175,18 @@
 
       window.wm.create({
         mode: "txt",
-        selector: ".mode-txt-noise div", //在p和div容器上添加，支持级联类指定，如：div .watermark
+        selector: ".mode-txt-noise div",
+        content: 123456,
+        opacity: 0.03,
+        color: "#000",
+        noise: true,
+        noiseAll: true,
+        userSelect: "inherit",
+      });
+
+      window.wm.create({
+        mode: "pixel",
+        selector: ".mode-pixel div",
         content: 123456,
         opacity: 0.03,
         color: "#000",

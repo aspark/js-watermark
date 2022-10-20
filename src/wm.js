@@ -466,14 +466,89 @@
         }
     }
 
-    // function hackCopy(runtime) {
-    //     addListener("copy", function () {
-    //         runtime.hide();
-    //         setTimeout(function () {
-    //             runtime.show();
-    //         }, 10);
-    //     });
-    // }
+    var PixelGenerator = function (cfg) {
+        if (!window.html2canvas) {
+            throw new Exception('need html2canvas lib')
+        }
+
+        let config = merge({
+            replaceByCanvas: false
+        }, cfg)
+
+        this.draw = function (el) {
+            el.style.position = 'relative'
+            let that = this;
+            if (el.nodeName == 'CANVAS') {
+                //todo:
+            }
+            else {
+                html2canvas(el).then(function (canvas) {
+                    that.scan(el, canvas)
+                })
+            }
+        }
+
+        let getColor = function (data, index) {
+            return data[index].toString('16') + data[index + 1].toString('16') + data[index + 2].toString('16') + data[index + 3].toString('16')
+        }
+
+        this.scan = function (el, canvas) {
+            // document.body.appendChild(canvas)
+
+            let width = canvas.width;
+            let height = canvas.height;
+            let context = canvas.getContext('2d');
+            // console.log(context.getImageData(0, 0, width, height))
+            let image = context.getImageData(0, 0, width, height, { colorSpace: "srgb" })
+            let data = image.data;
+            let bgColor = getColor(data, 0)
+            let lastColor = null;
+            let size = context.measureText('中')
+            let rowDelta = Math.round((size.fontBoundingBoxAscent + size.fontBoundingBoxDescent) / 2);
+            let colDelta = Math.round(size.width / 2);
+            // context.fillStyle = "white";
+            // context.fillRect(0, 0, width, height);
+            // context.fillText('中', 60, 60);
+
+            console.log(size)
+            for (let row = 0; row < height; row += rowDelta) {
+                for (let col = 0; col < width; col++) {
+                    let color = getColor(data, (row * width + col) * 4);
+
+                    if (lastColor && color != lastColor && lastColor != bgColor && color == bgColor) {
+                        console.log(color);
+                        // data[(row * width + col) * 4] = 0;
+                        // data[(row * width + col) * 4 + 1] = 0;
+                        // data[(row * width + col) * 4 + 2] = 0;
+                        // data[(row * width + col) * 4 + 3] = 255;
+                        var i = document.createElement('i');
+                        i.style.display = 'inline-block'
+                        i.style.width = '1px'
+                        i.style.height = '1px'
+                        i.style.position = 'absolute'
+                        i.style.top = row + 'px'
+                        i.style.left = col + 'px'
+                        i.style.backgroundColor = config.color;
+                        el.appendChild(i);
+
+                        col += colDelta
+                    }
+
+                    lastColor = color;
+                }
+            }
+            context.putImageData(image, 0, 0)
+        }
+
+        this.attach = function () {
+
+            let elements = getElements(config.selector)
+            for (let i = 0; i < elements.length; i++) {
+                this.draw(elements[i])
+            }
+        }
+
+    }
 
     function attach(options) {
         var cfg = {
@@ -505,6 +580,8 @@
             runtime = new TxtGenerator(cfg);
         else if (cfg.mode == 'html')
             runtime = new HTMLGenerator(cfg);
+        else if (cfg.mode == 'pixel')
+            runtime = new PixelGenerator(cfg);
         else
             runtime = ('\v' == 'v') ? new HTMLGenerator(cfg) : new CSS3Generator(cfg);//use html for ie8
 
